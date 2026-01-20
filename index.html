@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disney Channel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Pixelated Hearts Background -->
+  <canvas id="hearts-bg"></canvas>
+  
+  <!-- Main App Container -->
+  <div id="app">
+    <!-- Header with Logo and Show Scroller -->
+    <header class="header">
+      <div class="logo-container">
+        <div class="logo">
+          <div class="logo-icon"></div>
+          <span class="logo-text">DISNEY<br>CHANNEL</span>
+        </div>
+      </div>
+      
+      <!-- Horizontal Show Scroller -->
+      <div class="show-scroller-wrapper">
+        <button class="scroll-btn scroll-left" onclick="scrollShows(-1)">‹</button>
+        <div class="show-scroller" id="show-scroller">
+          <!-- Thumbnails injected by JS -->
+        </div>
+        <button class="scroll-btn scroll-right" onclick="scrollShows(1)">›</button>
+      </div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+      <!-- Content injected by JS -->
+    </main>
+  </div>
+  
+  <!-- Game Player Modal -->
+  <div class="game-modal" id="game-modal">
+    <div class="game-modal-header">
+      <h2 id="game-modal-title">Game Title</h2>
+      <button class="close-btn" onclick="closeGame()">✕</button>
+    </div>
+    <div class="game-modal-body" id="game-container">
+      <!-- Game loads here -->
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="ruffle/ruffle.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script src="hearts.js"></script>
+</body>
+</html>
