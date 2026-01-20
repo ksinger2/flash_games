@@ -93,19 +93,21 @@ body {
 .logo-icon {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  background: linear-gradient(135deg, #9333ea, #06b6d4);
   border-radius: 12px;
   position: relative;
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
 }
 
 .logo-icon::before {
-  content: '▶';
+  content: '⚡';
   position: absolute;
   top: 50%;
-  left: 55%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 20px;
-  color: white;
+  font-size: 28px;
+  color: #ffff00;
+  text-shadow: 0 0 10px #ffff00;
 }
 
 .logo-text {

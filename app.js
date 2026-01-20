@@ -1,6 +1,9 @@
 /* =============================================
-   DISNEY CHANNEL GAMES PORTAL - Main Application
+   THROWBACK TIZZY - Main Application
    ============================================= */
+
+// Check if mobile
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 // State
 let currentPage = 'home';
@@ -235,6 +238,23 @@ async function playGame(gameId, showId) {
 
   gameModalTitle.textContent = `${game.title} - ${show.title}`;
 
+  // Show mobile warning
+  if (isMobile) {
+    gameContainer.innerHTML = `
+      <div class="game-placeholder">
+        <h3>Desktop Recommended</h3>
+        <p style="margin-bottom: 20px;">Flash games work best on a computer with a mouse and keyboard.</p>
+        <p style="color: var(--text-secondary);">You can try anyway, but controls may not work properly on mobile.</p>
+        <button onclick="playGameForce('${gameId}', '${showId}')" style="margin-top: 25px; padding: 12px 30px; background: linear-gradient(135deg, #9333ea, #06b6d4); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+          Try Anyway
+        </button>
+      </div>
+    `;
+    gameModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+
   // Check if this game has an uploaded file first
   const uploaded = uploadedGames.find(u => u.id === gameId);
 
@@ -387,6 +407,33 @@ function closeGame() {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeGame();
 });
+
+// Force play on mobile (bypass warning)
+async function playGameForce(gameId, showId) {
+  const show = SHOWS.find(s => s.id === showId);
+  const game = show?.games.find(g => g.id === gameId);
+
+  if (!game) return;
+
+  const uploaded = uploadedGames.find(u => u.id === gameId);
+
+  if (uploaded) {
+    if (uploaded.type === 'dcr') {
+      await loadGameWithDirPlayer(uploaded.url, game.title);
+    } else {
+      await loadGameWithRuffle(uploaded.url, game.title);
+    }
+  } else if (game.folder) {
+    const gameFile = await detectGameFile(game.folder, game.id, game.file);
+    if (gameFile) {
+      if (gameFile.endsWith('.dcr')) {
+        await loadGameWithDirPlayer(gameFile, game.title);
+      } else {
+        await loadGameWithRuffle(gameFile, game.title);
+      }
+    }
+  }
+}
 
 // =============================================
 // FILE UPLOAD

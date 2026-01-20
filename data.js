@@ -66,6 +66,15 @@ const SHOWS = [
     games: []
   },
   {
+    id: 'billy-and-mandy',
+    title: "Billy & Mandy",
+    color: '#84cc16',
+    description: "Grim adventures with Billy and Mandy!",
+    games: [
+      { id: 'harum-scarum', title: 'Harum Scarum', desc: 'Spooky fun!', folder: 'games/billy-and-mandy/harum-scarum', file: 'harum-scarum.swf' },
+    ]
+  },
+  {
     id: 'misc',
     title: "Misc.",
     color: '#64748b',
@@ -73,15 +82,6 @@ const SHOWS = [
     games: [
       { id: 'food-bash', title: 'Food Bash', desc: 'Throw Food!', folder: 'games/misc/food-bash' },
       { id: 'stick-rpg', title: 'Stick RPG', desc: 'Live the stick life!', folder: 'games/misc/stick-rpg', file: 'stick-rpg.swf' },
-    ]
-  },
-  {
-    id: 'billy-and-mandy',
-    title: "Billy & Mandy",
-    color: '#84cc16',
-    description: "Grim adventures with Billy and Mandy!",
-    games: [
-      { id: 'harum-scarum', title: 'Harum Scarum', desc: 'Spooky fun!', folder: 'games/billy-and-mandy/harum-scarum', file: 'harum-scarum.swf' },
     ]
   },
 ];

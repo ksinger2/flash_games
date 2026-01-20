@@ -1,158 +1,249 @@
 /* =============================================
-   PIXELATED HEARTS BACKGROUND
-   Animated canvas shader effect
+   90s STYLE BACKGROUND ANIMATION
+   Lightning bolts, shapes, and retro vibes
    ============================================= */
 
 (function() {
   const canvas = document.getElementById('hearts-bg');
   const ctx = canvas.getContext('2d');
-  
+
   // Resize canvas to full window
   function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
-  
+
   resize();
   window.addEventListener('resize', resize);
-  
-  // Pixel size for the pixelated effect
-  const PIXEL_SIZE = 4;
-  
-  // Heart shape as a pixel grid (1 = filled, 0 = empty)
-  const HEART_PATTERN = [
-    [0,0,1,1,0,0,0,1,1,0,0],
-    [0,1,1,1,1,0,1,1,1,1,0],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [0,1,1,1,1,1,1,1,1,1,0],
-    [0,0,1,1,1,1,1,1,1,0,0],
-    [0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,0,0,0,0],
-    [0,0,0,0,0,1,0,0,0,0,0],
-  ];
-  
-  const HEART_WIDTH = HEART_PATTERN[0].length;
-  const HEART_HEIGHT = HEART_PATTERN.length;
-  
-  // Color palette (blue to white gradient)
+
+  // 90s Color palette - bright blue and purple
   const COLORS = [
-    { r: 15, g: 23, b: 42 },    // Very dark blue
-    { r: 30, g: 58, b: 95 },    // Dark blue
-    { r: 59, g: 130, b: 246 },  // Blue
-    { r: 96, g: 165, b: 250 },  // Light blue
-    { r: 147, g: 197, b: 253 }, // Lighter blue
-    { r: 191, g: 219, b: 254 }, // Very light blue
-    { r: 224, g: 242, b: 254 }, // Almost white blue
-    { r: 255, g: 255, b: 255 }, // White
+    '#00ffff', // Cyan
+    '#ff00ff', // Magenta
+    '#9333ea', // Purple
+    '#3b82f6', // Blue
+    '#f0abfc', // Light pink
+    '#67e8f9', // Light cyan
+    '#a855f7', // Violet
+    '#06b6d4', // Teal
   ];
-  
-  // Heart objects
-  const hearts = [];
-  const NUM_HEARTS = 25;
-  
-  // Create hearts
-  function createHeart() {
+
+  // Shape types
+  const SHAPE_TYPES = ['lightning', 'star', 'triangle', 'circle', 'zigzag', 'diamond'];
+
+  // Shapes array
+  const shapes = [];
+  const NUM_SHAPES = 30;
+
+  // Create a shape
+  function createShape() {
     return {
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      size: 0.5 + Math.random() * 1.5, // Scale factor
-      speed: 0.2 + Math.random() * 0.5,
-      colorIndex: Math.floor(Math.random() * (COLORS.length - 2)), // Start darker
-      colorDirection: 1,
-      colorSpeed: 0.005 + Math.random() * 0.01,
-      colorProgress: Math.random(),
-      alpha: 0.1 + Math.random() * 0.3,
-      drift: (Math.random() - 0.5) * 0.3,
+      size: 15 + Math.random() * 40,
+      type: SHAPE_TYPES[Math.floor(Math.random() * SHAPE_TYPES.length)],
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rotation: Math.random() * Math.PI * 2,
+      rotationSpeed: (Math.random() - 0.5) * 0.03,
+      speedX: (Math.random() - 0.5) * 1.5,
+      speedY: (Math.random() - 0.5) * 1.5,
+      alpha: 0.3 + Math.random() * 0.4,
+      pulse: Math.random() * Math.PI * 2,
+      pulseSpeed: 0.02 + Math.random() * 0.03,
     };
   }
-  
-  // Initialize hearts
-  for (let i = 0; i < NUM_HEARTS; i++) {
-    hearts.push(createHeart());
+
+  // Initialize shapes
+  for (let i = 0; i < NUM_SHAPES; i++) {
+    shapes.push(createShape());
   }
-  
-  // Lerp between colors
-  function lerpColor(c1, c2, t) {
-    return {
-      r: Math.round(c1.r + (c2.r - c1.r) * t),
-      g: Math.round(c1.g + (c2.g - c1.g) * t),
-      b: Math.round(c1.b + (c2.b - c1.b) * t),
-    };
+
+  // Draw lightning bolt
+  function drawLightning(x, y, size, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.beginPath();
+    ctx.moveTo(0, -size);
+    ctx.lineTo(size * 0.3, -size * 0.2);
+    ctx.lineTo(0, -size * 0.1);
+    ctx.lineTo(size * 0.4, size);
+    ctx.lineTo(-size * 0.1, size * 0.1);
+    ctx.lineTo(0, size * 0.3);
+    ctx.lineTo(-size * 0.3, -size);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
   }
-  
-  // Draw a pixelated heart
-  function drawHeart(heart) {
-    const pixelSize = PIXEL_SIZE * heart.size;
-    const startX = heart.x - (HEART_WIDTH * pixelSize) / 2;
-    const startY = heart.y - (HEART_HEIGHT * pixelSize) / 2;
-    
-    // Calculate current color
-    const colorIdx = Math.floor(heart.colorIndex);
-    const nextColorIdx = Math.min(colorIdx + 1, COLORS.length - 1);
-    const colorT = heart.colorIndex - colorIdx;
-    const color = lerpColor(COLORS[colorIdx], COLORS[nextColorIdx], colorT);
-    
-    ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${heart.alpha})`;
-    
-    // Draw each pixel of the heart
-    for (let row = 0; row < HEART_HEIGHT; row++) {
-      for (let col = 0; col < HEART_WIDTH; col++) {
-        if (HEART_PATTERN[row][col]) {
-          const px = startX + col * pixelSize;
-          const py = startY + row * pixelSize;
-          ctx.fillRect(
-            Math.floor(px), 
-            Math.floor(py), 
-            Math.ceil(pixelSize), 
-            Math.ceil(pixelSize)
-          );
-        }
+
+  // Draw star
+  function drawStar(x, y, size, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+      const r = i === 0 ? size : size;
+      if (i === 0) {
+        ctx.moveTo(Math.cos(angle) * size, Math.sin(angle) * size);
+      } else {
+        ctx.lineTo(Math.cos(angle) * size, Math.sin(angle) * size);
       }
+      const innerAngle = angle + (2 * Math.PI) / 10;
+      ctx.lineTo(Math.cos(innerAngle) * size * 0.4, Math.sin(innerAngle) * size * 0.4);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Draw triangle
+  function drawTriangle(x, y, size, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.beginPath();
+    ctx.moveTo(0, -size);
+    ctx.lineTo(size * 0.866, size * 0.5);
+    ctx.lineTo(-size * 0.866, size * 0.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Draw circle
+  function drawCircle(x, y, size) {
+    ctx.beginPath();
+    ctx.arc(x, y, size * 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Draw zigzag
+  function drawZigzag(x, y, size, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.lineWidth = size * 0.15;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-size, -size * 0.5);
+    ctx.lineTo(-size * 0.3, size * 0.5);
+    ctx.lineTo(size * 0.3, -size * 0.5);
+    ctx.lineTo(size, size * 0.5);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Draw diamond
+  function drawDiamond(x, y, size, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.beginPath();
+    ctx.moveTo(0, -size);
+    ctx.lineTo(size * 0.6, 0);
+    ctx.lineTo(0, size);
+    ctx.lineTo(-size * 0.6, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Draw shape based on type
+  function drawShape(shape) {
+    const pulseAlpha = shape.alpha + Math.sin(shape.pulse) * 0.15;
+    ctx.globalAlpha = Math.max(0.1, Math.min(0.8, pulseAlpha));
+    ctx.fillStyle = shape.color;
+    ctx.strokeStyle = shape.color;
+
+    switch(shape.type) {
+      case 'lightning':
+        drawLightning(shape.x, shape.y, shape.size, shape.rotation);
+        break;
+      case 'star':
+        drawStar(shape.x, shape.y, shape.size, shape.rotation);
+        break;
+      case 'triangle':
+        drawTriangle(shape.x, shape.y, shape.size, shape.rotation);
+        break;
+      case 'circle':
+        drawCircle(shape.x, shape.y, shape.size);
+        break;
+      case 'zigzag':
+        drawZigzag(shape.x, shape.y, shape.size, shape.rotation);
+        break;
+      case 'diamond':
+        drawDiamond(shape.x, shape.y, shape.size, shape.rotation);
+        break;
     }
   }
-  
-  // Update heart position and color
-  function updateHeart(heart) {
-    // Move upward
-    heart.y -= heart.speed;
-    heart.x += heart.drift;
-    
-    // Color pulsing
-    heart.colorProgress += heart.colorSpeed;
-    heart.colorIndex = 1 + Math.sin(heart.colorProgress) * 2 + 2;
-    
-    // Reset when off screen
-    if (heart.y < -50) {
-      heart.y = canvas.height + 50;
-      heart.x = Math.random() * canvas.width;
-    }
-    
-    // Wrap horizontally
-    if (heart.x < -50) heart.x = canvas.width + 50;
-    if (heart.x > canvas.width + 50) heart.x = -50;
+
+  // Update shape position
+  function updateShape(shape) {
+    shape.x += shape.speedX;
+    shape.y += shape.speedY;
+    shape.rotation += shape.rotationSpeed;
+    shape.pulse += shape.pulseSpeed;
+
+    // Wrap around screen
+    if (shape.x < -50) shape.x = canvas.width + 50;
+    if (shape.x > canvas.width + 50) shape.x = -50;
+    if (shape.y < -50) shape.y = canvas.height + 50;
+    if (shape.y > canvas.height + 50) shape.y = -50;
   }
-  
+
+  // Draw grid lines (90s style)
+  let gridOffset = 0;
+  function drawGrid() {
+    ctx.globalAlpha = 0.05;
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 1;
+
+    const gridSize = 60;
+    gridOffset = (gridOffset + 0.3) % gridSize;
+
+    // Horizontal lines
+    for (let y = gridOffset; y < canvas.height; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+    }
+
+    // Vertical lines
+    for (let x = gridOffset; x < canvas.width; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+      ctx.stroke();
+    }
+  }
+
   // Animation loop
   function animate() {
-    // Clear with dark background
-    ctx.fillStyle = 'rgba(10, 14, 26, 0.1)';
+    // Dark purple/blue gradient background
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#0f0a1a');
+    gradient.addColorStop(0.5, '#1a0a2e');
+    gradient.addColorStop(1, '#0a1628');
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Update and draw hearts
-    hearts.forEach(heart => {
-      updateHeart(heart);
-      drawHeart(heart);
+
+    // Draw moving grid
+    drawGrid();
+
+    // Update and draw shapes
+    ctx.globalAlpha = 1;
+    shapes.forEach(shape => {
+      updateShape(shape);
+      drawShape(shape);
     });
-    
+
     requestAnimationFrame(animate);
   }
-  
-  // Initial clear
-  ctx.fillStyle = '#0a0e1a';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   // Start animation
   animate();
 })();
